@@ -25,3 +25,4 @@ Route::group(['prefix'=>'app','name'=>'app.'],function (){
     Route::post('/reserve',[FlightController::class,'reserve']);
     Route::post('/confirm',[FlightController::class,'confirm']);
 });
+Route::get('/test',[FlightController::class,'test']);

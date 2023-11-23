@@ -8,6 +8,7 @@ use App\Http\Requests\Client\Flight\AvailRequest;
 use App\Http\Requests\Client\Flight\ConfirmRequest;
 use App\Http\Requests\Client\Flight\PreReserveRequest;
 use App\Repositories\Interfaces\Client\FlightRepositoryInterface;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
 class FlightController extends Controller
@@ -46,6 +47,7 @@ class FlightController extends Controller
             'data' => $data,
         ], 200);
     }
+
     public function confirm(ConfirmRequest $request)
     {
         $data = $this->repository->confirm($request->validated());
@@ -53,6 +55,28 @@ class FlightController extends Controller
             'success' => true,
             'message' => 'Flight confirmed',
             'data' => $data,
+        ], 200);
+    }
+
+    public function test()
+    {
+        $client = new Client();
+        $request = $client->request('POST', 'http://192.168.2.177:8000/api/flights/available', [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ],
+            'json' => [
+                'origin' => 'MHD',
+                'destination' => 'THR',
+                'departure_date' => '2024-01-02',
+            ],
+        ]);
+        $response = $request->getBody()->getContents();
+        return response()->json([
+            'success' => true,
+            'message' => 'List of available flights',
+            'flights' => json_decode($response, true),
         ], 200);
     }
 }
